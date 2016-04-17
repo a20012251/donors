@@ -25,6 +25,12 @@ queue()
     var totalDonationsDim  = ndx.dimension(function(d) { return d["total_donations"]; });
     var fundingStatusDim = ndx.dimension(function(d) { return d["funding_status"]; });
     var gradeLevelDim = ndx.dimension(function(d) { return d["grade_level"]; });
+    var latLongDim = ndx.dimension(function (d) { 
+      return {
+        school_latitude: d["school_latitude"],
+        school_longitude: d["school_longitude"]
+      };
+    });
 
 
     //Calculate metrics
@@ -47,6 +53,7 @@ queue()
       return d["total_donations"];
     });
     var stateGroup = stateDim.group();
+    var latLongGroup = latLongDim.group();
 
     var all = ndx.groupAll();
     var totalDonations = ndx.groupAll().reduceSum(function(d) {return d["total_donations"];});
@@ -95,12 +102,14 @@ queue()
       .height(250)
       .dimension(resourceTypeDim)
       .group(numProjectsByResourceType)
+      .on("filtered", function(chart) { renderPoints(resourceTypeDim.top(Infinity)); })
       .xAxis().ticks(4);
 
     povertyLevelChart
       .width(300)
       .height(250)
       .dimension(povertyLevelDim)
+      .on("filtered", function(chart) { renderPoints(povertyLevelDim.top(Infinity)); })
       .group(numProjectsByPovertyLevel)
       .xAxis().ticks(4);
 
@@ -145,12 +154,12 @@ queue()
             topLeft = bounds[0],
             bottomRight = bounds[1];
 
-        svg .attr("width", bottomRight[0] - topLeft[0])
-            .attr("height", bottomRight[1] - topLeft[1])
-            .style("left", topLeft[0] + "px")
-            .style("top", topLeft[1] + "px");
+        svg.attr("width", bottomRight[0] - topLeft[0])
+           .attr("height", bottomRight[1] - topLeft[1])
+           .style("left", topLeft[0] + "px")
+           .style("top", topLeft[1] + "px");
 
-        g   .attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
         feature.attr("d", path);
       }
@@ -161,6 +170,18 @@ queue()
         this.stream.point(point.x, point.y);
       }
     });
+    var layerPoints = new L.LayerGroup();
+    function renderPoints(points) {
+      layerPoints.eachLayer(function(l) {
+        map.removeLayer(l);
+      });
+      layerPoints.clearLayers();
+      points.forEach(function(d) {
+          var circle = L.circle([d.school_latitude, d.school_longitude], 1000, {
+          }).addTo(map);         
+          layerPoints.addLayer(circle);
+      });
+    }
 
     fundingStatusChart.height(220)
       .width(300)
@@ -168,11 +189,13 @@ queue()
       .innerRadius(40)
       .transitionDuration(1000)
       .dimension(fundingStatusDim)
-      .group(numProjectsByFundingStatus);
+      .group(numProjectsByFundingStatus)
+      .on("filtered", function(chart) { renderPoints(fundingStatusDim.top(Infinity)); });
 
     gradeLevelChart.height(220)
       .width(300)
       .dimension(gradeLevelDim)
+      .on("filtered", function(chart) { renderPoints(gradeLevelDim.top(Infinity)); })
       .group(numProjectsByGradeLevel)
       .xAxis().ticks(4);
 
@@ -182,6 +205,7 @@ queue()
       .transitionDuration(1000)
       .dimension(stateDim)
       .group(totalDonationsByState)
+      .on("filtered", function(chart) { renderPoints(stateDim.top(Infinity)); })
       .margins({top: 10, right: 50, bottom: 30, left: 50})
       .centerBar(false)
       .gap(5)
@@ -194,12 +218,15 @@ queue()
 
     dc.selectMenu('#menuselect')
       .dimension(gradeLevelDim)
+      .on("filtered", function(chart) { renderPoints(gradeLevelDim.top(Infinity)); })
       .group(numProjectsByGradeLevel);
     dc.selectMenu('#menuselect-state')
      .dimension(stateDim)
+      .on("filtered", function(chart) { renderPoints(stateDim.top(Infinity)); })
       .group(stateGroup);
     dc.selectMenu('#menuselect_poverty')
       .dimension(povertyLevelDim)
+      .on("filtered", function(chart) { renderPoints(povertyLevelDim.top(Infinity)); })
       .group(numProjectsByPovertyLevel);
 
     dc.renderAll();

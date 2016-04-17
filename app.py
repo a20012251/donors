@@ -19,6 +19,8 @@ FIELDS = {
         'total_donations': True,
         'funding_status': True,
         'grade_level': True,
+        'school_latitude': True,
+        'school_longitude': True,
         '_id': False
 }
 
