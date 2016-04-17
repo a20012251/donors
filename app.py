@@ -21,7 +21,6 @@ FIELDS = {
         'grade_level': True,
         '_id': False
 }
-MAX_PROJECTS = 0#100000
 
 
 @app.route("/")
@@ -33,13 +32,11 @@ def index():
 def donorschoose_projects():
     connection = MongoClient(MONGODB_HOST, MONGODB_PORT)
     collection = connection[DBS_NAME][COLLECTION_NAME]
-    projects = collection.find(projection=FIELDS, limit=100000)
+    projects = collection.find(projection=FIELDS, limit=10000)
     #projects = collection.find(projection=FIELDS)
     json_projects = []
     for project in projects:
         json_projects.append(project)
-        if len(json_projects) == MAX_PROJECTS:
-            break
     json_projects = json.dumps(json_projects, default=json_util.default)
     connection.close()
     return json_projects
