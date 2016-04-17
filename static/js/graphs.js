@@ -28,11 +28,21 @@ queue()
 
 
     //Calculate metrics
-    var numProjectsByDate = dateDim.group(); 
-    var numProjectsByResourceType = resourceTypeDim.group();
-    var numProjectsByPovertyLevel = povertyLevelDim.group();
-    var numProjectsByFundingStatus = fundingStatusDim.group();
-    var numProjectsByGradeLevel = gradeLevelDim.group();
+    var numProjectsByDate = dateDim.group().reduceSum(function(d) {
+      return d["total_donations"];
+    });
+    var numProjectsByResourceType = resourceTypeDim.group().reduceSum(function(d) {
+      return d["total_donations"];
+    });
+    var numProjectsByPovertyLevel = povertyLevelDim.group().reduceSum(function(d) {
+      return d["total_donations"];
+    });
+    var numProjectsByFundingStatus = fundingStatusDim.group().reduceSum(function(d) {
+      return d["total_donations"];
+    });
+    var numProjectsByGradeLevel = gradeLevelDim.group().reduceSum(function(d) {
+      return d["total_donations"];
+    });
     var totalDonationsByState = stateDim.group().reduceSum(function(d) {
       return d["total_donations"];
     });
