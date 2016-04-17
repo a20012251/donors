@@ -1,11 +1,32 @@
 <!DOCTYPE html>
 <html>
+  <style>
+
+  svg {
+    position: relative;
+  }
+
+  .chart-leaflet path {
+    fill: #000;
+    fill-opacity: .2;
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+
+  .chart-leaflet path:hover {
+    fill: brown;
+    fill-opacity: .7;
+  }
+
+  </style>
+
   <head>
     <title>Dashboard</title>
     <link rel="stylesheet" href="./static/lib/css//bootstrap.min.css">
     <link rel="stylesheet" href="./static/lib/css/keen-dashboards.css">
     <link rel="stylesheet" href="./static/lib/css/dc.css">
     <link rel="stylesheet" href="./static/css/custom.css">
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
 
 
   </head>
@@ -121,8 +142,9 @@
               <div class="chart-title">
                 Distribution of Donations
               </div>
-              <div class="chart-stage">
+              <div class="chart-stage chart-leaflet">
                 <div id="us-chart"></div>
+                <p id="map" style="height: 465px"/>
               </div>
             </div>
           </div>
@@ -190,7 +212,7 @@
     <script src="./static/lib/js/d3.js"></script>
     <script src="./static/lib/js/dc.js"></script>
     <script src="./static/lib/js/queue.js"></script>
-
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 
     <script src="./static/lib/js/keen.min.js"></script>
     <script src='./static/js/graphs.js' type='text/javascript'></script>
